@@ -106,5 +106,7 @@ public class HistoriaView extends Composite<VerticalLayout> {
         layoutColumn2.add(emailField);
         layoutColumn2.add(textArea);
         layoutColumn2.add(buttonPrimary);
+
+        //teste rs 
     }
 }
