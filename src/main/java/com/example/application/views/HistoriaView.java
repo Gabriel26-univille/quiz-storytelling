@@ -1,6 +1,7 @@
 package com.example.application.views;
 
 import com.example.application.data.Texto;
+import com.example.application.services.EmailSender;
 import com.vaadin.flow.component.Composite;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -13,8 +14,11 @@ import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.component.textfield.TextArea;
+import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+
+import javax.mail.MessagingException;
 
 @PageTitle("Historia")
 @Route(value = "historia")
@@ -22,6 +26,8 @@ import com.vaadin.flow.router.Route;
 public class HistoriaView extends Composite<VerticalLayout> {
 
     Texto texto = new Texto();
+    EmailSender emailSender = new EmailSender("quizstorytelling@gmail.com", "zdalevhynyidjhid");
+
     public HistoriaView() {
         VerticalLayout layoutColumn2 = new VerticalLayout();
         H1 h1 = new H1();
@@ -31,6 +37,7 @@ public class HistoriaView extends Composite<VerticalLayout> {
         Paragraph textMedium3 = new Paragraph();
 
         EmailField emailField = new EmailField();
+        TextField nomeField = new TextField();
         TextArea textArea = new TextArea();
         Button buttonPrimary = new Button();
 
@@ -56,6 +63,9 @@ public class HistoriaView extends Composite<VerticalLayout> {
 
         emailField.setLabel("Email");
         emailField.setWidth("min-content");
+
+        nomeField.setLabel("Nome");
+        nomeField.setWidth("min-content");
 
         textArea.setLabel("Resposta");
         textArea.setWidth("100%");
@@ -103,7 +113,20 @@ public class HistoriaView extends Composite<VerticalLayout> {
             }
         }
 
+        buttonPrimary.addClickListener(
+                sendMail -> {
+                    try {
+                    emailSender.sendEmail(
+                            "gabriel.lopes26@univille.br",
+                            "História " + texto.getPagina() + " - " + nomeField.getValue(),
+                            textArea.getValue() + "\n\n" + "E-mail: " + emailField.getValue());
+                    } catch (MessagingException e) {
+                    e.printStackTrace();
+                    }
+                });
+
         layoutColumn2.add(emailField);
+        layoutColumn2.add(nomeField);
         layoutColumn2.add(textArea);
         layoutColumn2.add(buttonPrimary);
 
