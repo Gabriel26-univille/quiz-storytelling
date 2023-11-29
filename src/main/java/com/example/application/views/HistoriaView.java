@@ -11,12 +11,14 @@ import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.theme.lumo.LumoUtility;
 
 import javax.mail.MessagingException;
 
@@ -30,6 +32,7 @@ public class HistoriaView extends Composite<VerticalLayout> {
 
     public HistoriaView() {
         VerticalLayout layoutColumn2 = new VerticalLayout();
+        HorizontalLayout layoutRow = new HorizontalLayout();
         H1 h1 = new H1();
         Button voltar = new Button(new Icon(VaadinIcon.ARROW_BACKWARD));
         Paragraph textMedium = new Paragraph();
@@ -45,13 +48,15 @@ public class HistoriaView extends Composite<VerticalLayout> {
         getContent().getStyle().set("flex-grow", "1");
         getContent().setFlexGrow(1.0, layoutColumn2);
 
+        layoutRow.setWidthFull();
+        layoutRow.addClassName(LumoUtility.Gap.MEDIUM);
+        layoutRow.setWidth("100%");
+        layoutRow.setHeight("min-content");
+
         layoutColumn2.setWidthFull();
         layoutColumn2.setWidth("100%");
         layoutColumn2.getStyle().set("flex-grow", "1");
         layoutColumn2.setAlignSelf(FlexComponent.Alignment.CENTER, h1);
-
-        h1.setText("Titulo");
-        h1.setWidth("min-content");
 
         textMedium.setWidth("100%");
         textMedium.getStyle().set("font-size", "var(--lumo-font-size-m)");
@@ -77,59 +82,68 @@ public class HistoriaView extends Composite<VerticalLayout> {
 
         getContent().add(layoutColumn2);
         layoutColumn2.add(voltar);
-        layoutColumn2.add(h1);
 
         voltar.addClickListener(e ->
                 voltar.getUI().ifPresent(ui ->
                         ui.navigate("principal"))
         );
 
+        buttonPrimary.addClickListener(
+                sendMail -> {
+                    try {
+                        emailSender.sendEmail(
+                                "gabriel.lopes26@univille.br",
+                                "História " + texto.getPagina() + " - " + nomeField.getValue(),
+                                textArea.getValue() + "\n\n" + "E-mail: " + emailField.getValue());
+                        Texto.setSucesso(true);
+                    } catch (MessagingException e) {
+                        e.printStackTrace();
+                        Texto.setSucesso(false);
+                    }
+
+                    buttonPrimary.getUI().ifPresent(ui ->
+                            ui.navigate("resultado"));
+                });
+
         switch (texto.getPagina()) {
             case 1 ->
             {
+                h1.setText(texto.getTitulos(0));
                 textMedium.setText(texto.getParagrafos(0));
                 textMedium2.setText(texto.getParagrafos(1));
 
+                layoutColumn2.add(h1);
                 layoutColumn2.add(textMedium);
                 layoutColumn2.add(textMedium2);
             }
             case 2 ->
             {
+                h1.setText(texto.getTitulos(1));
                 textMedium.setText(texto.getParagrafos(1));
                 textMedium2.setText(texto.getParagrafos(2));
 
+                layoutColumn2.add(h1);
                 layoutColumn2.add(textMedium);
                 layoutColumn2.add(textMedium2);
             }
             case 3 ->
             {
+                h1.setText(texto.getTitulos(2));
                 textMedium.setText(texto.getParagrafos(2));
                 textMedium2.setText(texto.getParagrafos(0));
                 textMedium3.setText(texto.getParagrafos(1));
 
+                layoutColumn2.add(h1);
                 layoutColumn2.add(textMedium);
                 layoutColumn2.add(textMedium2);
                 layoutColumn2.add(textMedium3);
             }
         }
 
-        buttonPrimary.addClickListener(
-                sendMail -> {
-                    try {
-                    emailSender.sendEmail(
-                            "gabriel.lopes26@univille.br",
-                            "História " + texto.getPagina() + " - " + nomeField.getValue(),
-                            textArea.getValue() + "\n\n" + "E-mail: " + emailField.getValue());
-                    } catch (MessagingException e) {
-                    e.printStackTrace();
-                    }
-                });
-
-        layoutColumn2.add(emailField);
-        layoutColumn2.add(nomeField);
+        layoutColumn2.add(layoutRow);
+        layoutRow.add(emailField);
+        layoutRow.add(nomeField);
         layoutColumn2.add(textArea);
         layoutColumn2.add(buttonPrimary);
-
-        //teste rs 
     }
 }
